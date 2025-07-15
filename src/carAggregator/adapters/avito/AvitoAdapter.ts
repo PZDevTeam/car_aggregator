@@ -9,12 +9,14 @@ import { CarInfo } from 'src/carAggregator/api/types';
 class AvitoAdapter {
   pageNumber: number;
   page: Page;
+  processAggregation: boolean;
 
   constructor(pageNumber: number) {
     this.pageNumber = pageNumber;
   }
 
   async listPageAggregate() {
+    this.processAggregation = true;
     const url = `https://www.avito.ru/moskva/avtomobili?context=H4sIAAAAAAAA_wEmANn_YToxOntzOjE6InkiO3M6MTY6IjVSU1VWalM4ZmQ2bHVhbVQiO301M17tJgAAAA&f=ASgBAQECA0SeEqC4ArCzFP6hjwPs6hSSmZADAUCE0RKEgMnaEajJ2hGSydoRnMnaEaLJ2hH8yNoRpsnaEYjJ2hEBRcaaDBx7ImZyb20iOjUwMDAwMCwidG8iOjEwMDAwMDB9&p=${this.pageNumber}&q=автомобили+с+пробегом+от+собственника&radius=3000&searchRadius=3000`;
     const page = await BrowserFactory.getPage();
 
@@ -108,6 +110,10 @@ class AvitoAdapter {
   }
 
   async startAggregation() {
+    if (this.processAggregation) {
+      return null;
+    }
+    this.processAggregation = true;
     try {
       console.log('Agggregation started');
       const carsList = await this.listPageAggregate();
@@ -125,7 +131,7 @@ class AvitoAdapter {
         context: that,
       });
 
-      console.log(details, 'details');
+      this.processAggregation = false;
 
       return carsList.map(
         (

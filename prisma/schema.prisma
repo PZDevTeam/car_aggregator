@@ -13,3 +13,33 @@ datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
 }
+
+model Car {
+  id              Int     @id @default(autoincrement())
+  brand           String
+  model           String
+  speciphication  String
+  location        String
+  detailUrl       String  @unique
+  mileage         Int
+  ownersCount     Int
+  year            Int
+  price           Int
+  state           String
+  power           String
+  engineCopacity  String
+  color           String
+  complectation   String
+  dtpCount        Int
+  priceHistory PriceHistory[]  // связь с историей цен
+
+  @@map("car") // Опционально: имя таблицы в БД
+}
+
+model PriceHistory {
+  id        Int     @id @default(autoincrement())
+  car       Car     @relation(fields: [carId], references: [id])
+  carId     Int
+  price     Int
+  createdAt DateTime @default(now())
+}
