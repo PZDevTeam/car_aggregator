@@ -1,3 +1,4 @@
+import { AutoRuAdapter } from './adapters/autoRu/AutoRuAdapter';
 import { AvitoAdapter } from './adapters/avito/AvitoAdapter';
 import { DromAdapter } from './adapters/drom/DromAdapter';
 
