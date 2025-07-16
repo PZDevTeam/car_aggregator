@@ -15,9 +15,9 @@ class AvitoAdapter {
     this.pageNumber = pageNumber;
   }
 
-  async listPageAggregate() {
+  async listPageAggregate(pageNumber: number) {
     this.processAggregation = true;
-    const url = `https://www.avito.ru/moskva/avtomobili?context=H4sIAAAAAAAA_wEmANn_YToxOntzOjE6InkiO3M6MTY6IjVSU1VWalM4ZmQ2bHVhbVQiO301M17tJgAAAA&f=ASgBAQECA0SeEqC4ArCzFP6hjwPs6hSSmZADAUCE0RKEgMnaEajJ2hGSydoRnMnaEaLJ2hH8yNoRpsnaEYjJ2hEBRcaaDBx7ImZyb20iOjUwMDAwMCwidG8iOjEwMDAwMDB9&p=${this.pageNumber}&q=автомобили+с+пробегом+от+собственника&radius=3000&searchRadius=3000`;
+    const url = `https://www.avito.ru/moskva/avtomobili?context=H4sIAAAAAAAA_wEmANn_YToxOntzOjE6InkiO3M6MTY6IjVSU1VWalM4ZmQ2bHVhbVQiO301M17tJgAAAA&f=ASgBAQECA0SeEqC4ArCzFP6hjwPs6hSSmZADAUCE0RKEgMnaEajJ2hGSydoRnMnaEaLJ2hH8yNoRpsnaEYjJ2hEBRcaaDBx7ImZyb20iOjUwMDAwMCwidG8iOjEwMDAwMDB9&p=${pageNumber}&q=автомобили+с+пробегом+от+собственника&radius=3000&searchRadius=3000`;
     const page = await BrowserFactory.getPage();
 
     this.page = page;
@@ -114,10 +114,17 @@ class AvitoAdapter {
     }
     this.processAggregation = true;
     try {
-      const carsList = await this.listPageAggregate();
-
-      // eslint-disable-next-line @typescript-eslint/no-this-alias
+      // const carsList = await this.listPageAggregate();
+      const aggregatePage = this.listPageAggregate;
       const that = this;
+
+      const carsList = (
+        await promisifyQueue({
+          argumentsQueue: new Array(10).map((_, i) => i),
+          func: aggregatePage,
+          context: that,
+        })
+      ).flat();
 
       const func = this.unpackCarDetails;
 

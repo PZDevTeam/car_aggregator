@@ -15,11 +15,11 @@ export class CarAggregatorService {
   @Cron(CronExpression.EVERY_30_SECONDS) // Каждые 30 секунд
   async handleCron() {
     // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-    const cars: CarInfo[] | null = await carAggregator.aggregateCars();
+    carAggregator.aggregateCars();
 
-    if (!cars) {
-      return;
-    }
+    // if (!cars) {
+    //   return;
+    // }
 
     // for (const carData of cars) {
     //   const existingCar = await this.prisma.car.findUnique({
@@ -50,43 +50,43 @@ export class CarAggregatorService {
     //   }
     // }
 
-    await this.prisma.car.createMany({
-      data: cars.map(
-        ({
-          brand,
-          model,
-          speciphication,
-          location,
-          detailUrl,
-          mileage,
-          price,
-          ownersCount,
-          year,
-          dtpCount,
-          state,
-          color,
-          engineCopacity,
-          complectation,
-          power,
-        }) => ({
-          brand,
-          model,
-          speciphication,
-          location,
-          detailUrl,
-          mileage: mileage || 0,
-          ownersCount: ownersCount,
-          year,
-          price,
-          state: state,
-          power,
-          engineCopacity,
-          color,
-          complectation,
-          dtpCount,
-        }),
-      ),
-      skipDuplicates: true,
-    });
+    // await this.prisma.car.createMany({
+    //   data: cars.map(
+    //     ({
+    //       brand,
+    //       model,
+    //       speciphication,
+    //       location,
+    //       detailUrl,
+    //       mileage,
+    //       price,
+    //       ownersCount,
+    //       year,
+    //       dtpCount,
+    //       state,
+    //       color,
+    //       engineCopacity,
+    //       complectation,
+    //       power,
+    //     }) => ({
+    //       brand,
+    //       model,
+    //       speciphication,
+    //       location,
+    //       detailUrl,
+    //       mileage: mileage || 0,
+    //       ownersCount: ownersCount,
+    //       year,
+    //       price,
+    //       state: state,
+    //       power,
+    //       engineCopacity,
+    //       color,
+    //       complectation,
+    //       dtpCount,
+    //     }),
+    //   ),
+    //   skipDuplicates: true,
+    // });
   }
 }
