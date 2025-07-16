@@ -3,8 +3,8 @@ type CarInfo = {
   model: string;
   price: number;
   speciphication: string;
-  location: string;
   detailUrl: string;
+  location: string;
   mileage: number;
   ownersCount: number;
   year: number;
@@ -12,6 +12,12 @@ type CarInfo = {
   priceEvaulationPercent: number;
   dtpCount: number;
   checkHistoryData: string;
+  createdPostDate: string;
+
+  power: string;
+  color: string;
+  engineCopacity: string;
+  complectation: string;
 };
 
 export type { CarInfo };

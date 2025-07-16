@@ -1,4 +1,3 @@
-import { Page } from 'puppeteer';
 import { AvitoAdapter } from './adapters/avito/AvitoAdapter';
 
 const avitoData = new AvitoAdapter(1);
@@ -10,8 +9,3 @@ export class CarAggregator {
     return aggregate
   }
 }
-
-// type AggregateCarsProps = {
-//   service: string;
-//   carInfo: CarInfo[];
-// };

@@ -16,8 +16,7 @@ export class CarAggregatorService {
   async handleCron() {
     // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
     const cars: CarInfo[] | null = await carAggregator.aggregateCars();
-    
-    console.log(cars, 'cars');
+
     if (!cars) {
       return;
     }
@@ -51,8 +50,6 @@ export class CarAggregatorService {
     //   }
     // }
 
-
-
     await this.prisma.car.createMany({
       data: cars.map(
         ({
@@ -65,7 +62,12 @@ export class CarAggregatorService {
           price,
           ownersCount,
           year,
+          dtpCount,
           state,
+          color,
+          engineCopacity,
+          complectation,
+          power,
         }) => ({
           brand,
           model,
@@ -77,23 +79,14 @@ export class CarAggregatorService {
           year,
           price,
           state: state,
-          power: '',
-          engineCopacity: '',
-          color: '',
-          complectation: '',
-          dtpCount: 0,
+          power,
+          engineCopacity,
+          color,
+          complectation,
+          dtpCount,
         }),
       ),
       skipDuplicates: true,
     });
-
-    // this.prisma.car.createMany({
-    //   data: cars.test.map((car) => ({
-    //     brand: car.brand,
-    //     model: car.model,
-    //     year: car.year,
-    //   }))
-    //   ,
-    // })
   }
 }

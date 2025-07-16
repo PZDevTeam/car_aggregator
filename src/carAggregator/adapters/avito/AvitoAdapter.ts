@@ -77,6 +77,10 @@ class AvitoAdapter {
         '[data-marker="item-view/item-params"]',
       ) as HTMLDivElement;
 
+      const postCreationDate = document.querySelector(
+        '[data-marker="item-view/item-date"]',
+      ) as HTMLSpanElement;
+
       const ownersCount = carsParams?.children?.[1]
         ?.children?.[5] as HTMLDivElement;
 
@@ -84,18 +88,10 @@ class AvitoAdapter {
 
       const state = carsParams?.children[1].children[6] as HTMLDivElement;
 
-      // const [element] = await page.$x(`//*[contains(text(), '${text}')]`);
+      const complectation = carsParams?.children[1]
+        .children[11] as HTMLDivElement;
 
-      // const titles  =document.querySelectorAll('h3')
-
-      // const ownersCount = (carsParams as any)?.children[1].children[5]
-      //   .innerText;
-
-      // return {
-      //   ownersCount: ownersCount?.replace('Владельцев по ПТС:', '')?.trim(),
-      //   year: year?.replace('Год выпуска:', '')?.trim(),
-      //   status: state?.replace('Состояние:', '')?.trim(),
-      // };
+      const color = carsParams?.children[1].children[13] as HTMLDivElement;
 
       return {
         ownersCount: +ownersCount?.innerText
@@ -103,6 +99,9 @@ class AvitoAdapter {
           ?.trim(),
         year: +year?.innerText?.replace('Год выпуска:', '')?.trim(),
         state: state?.innerText?.replace('Состояние:', '')?.trim(),
+        postCreationDate: postCreationDate?.innerText,
+        complectation: complectation?.innerText?.replace('Комплектация:', ''),
+        color: color?.innerText?.replace('Цвет', ''),
       };
     });
 
@@ -115,7 +114,6 @@ class AvitoAdapter {
     }
     this.processAggregation = true;
     try {
-      console.log('Agggregation started');
       const carsList = await this.listPageAggregate();
 
       // eslint-disable-next-line @typescript-eslint/no-this-alias
@@ -144,7 +142,6 @@ class AvitoAdapter {
             brand,
             model,
             price,
-            speciphication: '',
             detailUrl,
             location,
             mileage,
@@ -153,7 +150,13 @@ class AvitoAdapter {
             state: priceDetails.state,
             priceEvaulationPercent: 0,
             dtpCount: 0,
+            speciphication: '',
             checkHistoryData: '',
+            createdPostDate: priceDetails.postCreationDate,
+            power: '',
+            color: priceDetails.color,
+            engineCopacity: '',
+            complectation: priceDetails.complectation,
           };
         },
       ) as CarInfo[];
