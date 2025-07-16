@@ -1,5 +1,7 @@
+/* eslint-disable @typescript-eslint/unbound-method */
 import { Page } from 'puppeteer';
 import { BrowserFactory } from 'src/carAggregator/browserFactory';
+import { promisifyQueue } from 'src/utils/helpers/promisifyQueue';
 
 type MockAutoRuData = {
   title: string;
@@ -61,38 +63,56 @@ class AutoRuAdapter {
     return items;
   }
 
-  async DetailInfoAggregate() {
-    const pageData = await this.listPageAggregate();
-    const page = await BrowserFactory.getPage();
+  async detailInfoAggregate(carUrl: string) {
+    await this.page.goto(carUrl);
+    await this.page.waitForSelector('[class="CardHead"]');
+    const detailInfo = await this.page.evaluate(() => {
+      const ownersCount = (
+        document.querySelector(
+          '[class="CardInfoSummarySimpleRow__content-IIKcj"]',
+        ) as HTMLDivElement
+      )?.innerText
+        .slice(0, 2)
+        .trimEnd();
+      return {
+        ownersCount,
+      };
+    });
+    return detailInfo;
+  }
 
-    const result = await Promise.all(
-      pageData.map(async (elem) => {
-        try {
-          await page.goto(elem.detailUrl);
-          await page.waitForSelector('[class="CardHead"]');
-          const detailInfo = await page.evaluate(() => {
-            const ownersCount = (
-              document.querySelector(
-                '[class="CardInfoSummarySimpleRow__content-IIKcj"]',
-              ) as HTMLDivElement
-            )?.innerText
-              .slice(0, 2)
-              .trimEnd();
-            return {
-              ownersCount,
-            };
-          });
-          return { ...elem, ...detailInfo };
-        } catch (error) {
-          console.log(
-            `Ошибка при переходе на детальную страницу машины: ${error} `,
-          );
-          return elem;
-        }
-      }),
-    );
+  async getFullInfo() {
+    try {
+      const mainInfo = await this.listPageAggregate();
+      // eslint-disable-next-line @typescript-eslint/no-this-alias
+      const that = this;
+      const func = this.detailInfoAggregate;
+      const queue = mainInfo.map((el) => el.detailUrl);
+      const fullInfo = await promisifyQueue({
+        argumentsQueue: queue,
+        func,
+        context: that,
+      });
 
-    return result;
+      return mainInfo.map(
+        ({ detailUrl, location, mileage, price, title, year }, index) => {
+          const ownersCount = fullInfo[index];
+
+          return {
+            title,
+            year,
+            mileage,
+            price,
+            location,
+            detailUrl,
+            ownersCount,
+          };
+        },
+      );
+    } catch (error) {
+      console.log(`error while detailInfo ${error}`);
+      //   return this.getFullInfo();
+    }
   }
 }
 
